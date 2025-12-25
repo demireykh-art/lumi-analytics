@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>루미의원 CRM & 예약 관리 시스템</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>루미의원 CRM - 카테고리 기반 관리 시스템</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -14,67 +14,118 @@
             <div class="logo-icon">💎</div>
             <div class="logo-text">
                 <h1>LUMI CRM</h1>
-                <span>Reservation & Strategy System</span>
+                <span>카테고리 기반 시술 관리</span>
             </div>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline" onclick="App.syncNaver()">
-                <span class="btn-icon">🔄</span> 네이버 동기화
+                <span>🔄</span> 네이버 동기화
             </button>
-            <div class="status-badge online">
-                <span class="status-dot"></span> 연동 대기중
+            <div class="status-badge">
+                <span class="status-dot"></span> <span id="connectionStatus">연동 대기</span>
             </div>
         </div>
     </header>
 
     <!-- Navigation -->
     <nav class="nav-tabs">
-        <div class="nav-tab active" data-tab="strategy">💰 객단가 전략</div>
+        <div class="nav-tab active" data-tab="dashboard">📊 대시보드</div>
+        <div class="nav-tab" data-tab="categories">📁 카테고리 관리</div>
+        <div class="nav-tab" data-tab="treatments">💉 시술 설정</div>
         <div class="nav-tab" data-tab="combination">🎯 콤비네이션</div>
-        <div class="nav-tab" data-tab="membership">💳 회원권 설계</div>
         <div class="nav-tab" data-tab="reservation">📅 예약 관리</div>
-        <div class="nav-tab" data-tab="settings">⚙️ 시술/인력 설정</div>
+        <div class="nav-tab" data-tab="staff">👥 인력 설정</div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
         
-        <!-- 객단가 전략 탭 -->
-        <section id="strategy" class="tab-panel active">
+        <!-- 대시보드 탭 -->
+        <section id="dashboard" class="tab-panel active">
             <div class="section-header">
-                <h2>📊 시술별 객단가 분석</h2>
-                <p>객단가가 낮은 시술을 식별하고 개선 전략을 수립합니다</p>
+                <h2>📊 카테고리별 매출 현황</h2>
+                <p>2024년 11~12월 데이터 기준</p>
             </div>
             
-            <div class="analysis-grid">
-                <!-- 객단가 순위 차트 -->
+            <div class="dashboard-grid">
                 <div class="card">
                     <div class="card-header">
-                        <h3>객단가 순위</h3>
-                        <span class="badge">평균: 176만원</span>
+                        <h3>카테고리별 매출 순위</h3>
                     </div>
-                    <div class="chart-container">
-                        <div id="priceRankingChart"></div>
-                    </div>
+                    <div id="categoryRevenueChart" class="chart-container"></div>
                 </div>
                 
-                <!-- 문제 시술 하이라이트 -->
-                <div class="card highlight-card warning">
+                <div class="card">
                     <div class="card-header">
-                        <h3>⚠️ 개선 필요 시술</h3>
+                        <h3>객단가 분석</h3>
+                        <span class="badge">카테고리별 평균</span>
                     </div>
-                    <div class="problem-list" id="problemTreatments">
-                        <!-- JS로 렌더링 -->
-                    </div>
+                    <div id="priceAnalysisChart" class="chart-container"></div>
                 </div>
             </div>
             
-            <!-- 전략 제안 -->
-            <div class="strategy-section">
-                <h3>🎯 객단가 향상 전략</h3>
-                <div class="strategy-cards" id="strategyCards">
-                    <!-- JS로 렌더링 -->
+            <div class="section-header" style="margin-top: 32px;">
+                <h3>✨ 추천 콤비네이션</h3>
+            </div>
+            <div id="recommendedCombos" class="combo-grid"></div>
+        </section>
+
+        <!-- 카테고리 관리 탭 -->
+        <section id="categories" class="tab-panel">
+            <div class="section-header">
+                <h2>📁 카테고리 관리</h2>
+                <p>각 카테고리의 기본 인력시간코드와 소요시간을 설정합니다. 시술에 개별 설정이 없으면 카테고리 기본값이 적용됩니다.</p>
+            </div>
+            
+            <div class="code-legend">
+                <h4>📋 인력시간코드 규칙</h4>
+                <div class="legend-grid">
+                    <div class="legend-item"><span class="code">H</span><span>대표원장</span></div>
+                    <div class="legend-item"><span class="code">S</span><span>부원장</span></div>
+                    <div class="legend-item"><span class="code">N</span><span>간호사</span></div>
+                    <div class="legend-item"><span class="code">A</span><span>관리사</span></div>
+                    <div class="legend-item"><span class="code">HS</span><span>원장 중 택1</span></div>
+                    <div class="legend-item example"><span class="code">H10N5A20</span><span>= 원장10분 + 간호사5분 + 관리사20분</span></div>
                 </div>
+            </div>
+            
+            <div id="categoryGrid" class="category-grid"></div>
+            
+            <button class="btn btn-outline" onclick="App.addCategory()" style="margin-top: 20px;">
+                + 카테고리 추가
+            </button>
+        </section>
+
+        <!-- 시술 설정 탭 -->
+        <section id="treatments" class="tab-panel">
+            <div class="section-header">
+                <h2>💉 시술 설정</h2>
+                <p>개별 시술의 인력시간코드를 설정합니다. 빈칸이면 카테고리 기본값이 적용됩니다.</p>
+            </div>
+            
+            <div class="table-actions">
+                <button class="btn btn-primary" onclick="App.openAddTreatmentModal()">
+                    + 시술 추가
+                </button>
+                <input type="text" class="search-input" placeholder="🔍 시술명 검색..." 
+                       oninput="App.filterTreatments(this.value)">
+            </div>
+            
+            <div class="table-container">
+                <table class="treatment-table">
+                    <thead>
+                        <tr>
+                            <th>시술명</th>
+                            <th>가격</th>
+                            <th>건수</th>
+                            <th>인력시간코드 (개별)</th>
+                            <th>소요시간 (개별)</th>
+                            <th>적용값</th>
+                            <th>액션</th>
+                        </tr>
+                    </thead>
+                    <tbody id="treatmentTableBody"></tbody>
+                </table>
             </div>
         </section>
 
@@ -82,165 +133,30 @@
         <section id="combination" class="tab-panel">
             <div class="section-header">
                 <h2>🎯 시술 콤비네이션 설계</h2>
-                <p>저객단가 시술과 고객단가 시술을 묶어 패키지를 만듭니다</p>
+                <p>저객단가 시술과 고객단가 시술을 묶어 패키지를 구성합니다</p>
             </div>
             
             <div class="combo-builder">
                 <div class="combo-column">
-                    <h3>📋 저객단가 시술 (Hook)</h3>
-                    <p class="subtitle">고객 유입용 시술</p>
-                    <div class="treatment-list" id="lowPriceTreatments">
-                        <!-- JS로 렌더링 -->
-                    </div>
+                    <h3>📋 저객단가 카테고리</h3>
+                    <p class="subtitle">고객 유입용 (평균 30만원 미만)</p>
+                    <div id="lowPriceCategories" class="category-list"></div>
                 </div>
                 
-                <div class="combo-arrow">
-                    <span>➕</span>
-                </div>
+                <div class="combo-arrow">➕</div>
                 
                 <div class="combo-column">
-                    <h3>💎 고객단가 시술 (Upsell)</h3>
-                    <p class="subtitle">수익 극대화 시술</p>
-                    <div class="treatment-list" id="highPriceTreatments">
-                        <!-- JS로 렌더링 -->
-                    </div>
+                    <h3>💎 고객단가 카테고리</h3>
+                    <p class="subtitle">수익 극대화 (평균 50만원 이상)</p>
+                    <div id="highPriceCategories" class="category-list"></div>
                 </div>
                 
-                <div class="combo-arrow">
-                    <span>＝</span>
-                </div>
+                <div class="combo-arrow">＝</div>
                 
                 <div class="combo-column result">
-                    <h3>🎁 추천 패키지</h3>
-                    <p class="subtitle">콤비네이션 결과</p>
-                    <div class="package-result" id="packageResult">
-                        <div class="empty-state">
-                            좌측에서 시술을 선택하세요
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 추천 콤비네이션 -->
-            <div class="recommended-combos">
-                <h3>✨ AI 추천 콤비네이션</h3>
-                <div class="combo-grid" id="recommendedCombos">
-                    <!-- JS로 렌더링 -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 회원권 설계 탭 -->
-        <section id="membership" class="tab-panel">
-            <div class="section-header">
-                <h2>💳 회원권 & 정기권 설계</h2>
-                <p>저객단가 시술을 포함한 회원권으로 재방문율을 높입니다</p>
-            </div>
-            
-            <div class="membership-grid">
-                <!-- 베이직 -->
-                <div class="membership-card" data-tier="basic">
-                    <div class="tier-badge basic">BASIC</div>
-                    <h3>피부관리 정기권</h3>
-                    <div class="price">50<span>만원/6개월</span></div>
-                    <div class="included-treatments">
-                        <h4>포함 시술</h4>
-                        <ul>
-                            <li><span class="check">✓</span> 피부제모 월 1회</li>
-                            <li><span class="check">✓</span> 기본 피부관리 월 1회</li>
-                            <li><span class="check">✓</span> 전 시술 5% 할인</li>
-                        </ul>
-                    </div>
-                    <div class="upsell-path">
-                        <h4>🎯 업셀링 경로</h4>
-                        <div class="path-flow">
-                            피부제모 → 피부모공/결 → 피부색소
-                        </div>
-                    </div>
-                    <div class="expected-revenue">
-                        <span class="label">예상 객단가 상승</span>
-                        <span class="value">+85만원</span>
-                    </div>
-                </div>
-                
-                <!-- 프리미엄 -->
-                <div class="membership-card featured" data-tier="premium">
-                    <div class="tier-badge premium">PREMIUM</div>
-                    <div class="popular-tag">인기</div>
-                    <h3>토탈 스킨케어</h3>
-                    <div class="price">150<span>만원/6개월</span></div>
-                    <div class="included-treatments">
-                        <h4>포함 시술</h4>
-                        <ul>
-                            <li><span class="check">✓</span> 피부돌출 관리 월 2회</li>
-                            <li><span class="check">✓</span> 피부모공/결 월 1회</li>
-                            <li><span class="check">✓</span> 탄력잔주름 월 1회</li>
-                            <li><span class="check">✓</span> 전 시술 10% 할인</li>
-                        </ul>
-                    </div>
-                    <div class="upsell-path">
-                        <h4>🎯 업셀링 경로</h4>
-                        <div class="path-flow">
-                            피부돌출 → 탄력쫀쫀 → Special흉터
-                        </div>
-                    </div>
-                    <div class="expected-revenue">
-                        <span class="label">예상 객단가 상승</span>
-                        <span class="value">+320만원</span>
-                    </div>
-                </div>
-                
-                <!-- VIP -->
-                <div class="membership-card" data-tier="vip">
-                    <div class="tier-badge vip">VIP</div>
-                    <h3>프리미엄 안티에이징</h3>
-                    <div class="price">300<span>만원/12개월</span></div>
-                    <div class="included-treatments">
-                        <h4>포함 시술</h4>
-                        <ul>
-                            <li><span class="check">✓</span> 탄력쫀쫀 분기 1회</li>
-                            <li><span class="check">✓</span> 꺼짐볼륨 분기 1회</li>
-                            <li><span class="check">✓</span> 피부색소 월 1회</li>
-                            <li><span class="check">✓</span> 전 시술 15% 할인</li>
-                            <li><span class="check">✓</span> 원장 전담 상담</li>
-                        </ul>
-                    </div>
-                    <div class="upsell-path">
-                        <h4>🎯 업셀링 경로</h4>
-                        <div class="path-flow">
-                            정기관리 → Special흉터 → 리프팅 패키지
-                        </div>
-                    </div>
-                    <div class="expected-revenue">
-                        <span class="label">예상 객단가 상승</span>
-                        <span class="value">+580만원</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 회원권 효과 시뮬레이션 -->
-            <div class="simulation-section">
-                <h3>📈 회원권 도입 효과 시뮬레이션</h3>
-                <div class="simulation-grid">
-                    <div class="sim-card">
-                        <div class="sim-label">저객단가 시술 전환율</div>
-                        <div class="sim-value">156만 → <span class="highlight">241만</span></div>
-                        <div class="sim-change">+54.5%</div>
-                    </div>
-                    <div class="sim-card">
-                        <div class="sim-label">피부돌출 업셀링률</div>
-                        <div class="sim-value">296만 → <span class="highlight">485만</span></div>
-                        <div class="sim-change">+63.9%</div>
-                    </div>
-                    <div class="sim-card">
-                        <div class="sim-label">재방문율</div>
-                        <div class="sim-value">23% → <span class="highlight">52%</span></div>
-                        <div class="sim-change">+29%p</div>
-                    </div>
-                    <div class="sim-card">
-                        <div class="sim-label">예상 월 추가 매출</div>
-                        <div class="sim-value"><span class="highlight">+8,500만</span></div>
-                        <div class="sim-change">연 10.2억 추가</div>
+                    <h3>🎁 패키지 구성</h3>
+                    <div id="packageBuilder" class="package-builder">
+                        <div class="empty-state">카테고리를 선택하세요</div>
                     </div>
                 </div>
             </div>
@@ -250,123 +166,118 @@
         <section id="reservation" class="tab-panel">
             <div class="section-header">
                 <h2>📅 예약 슬롯 관리</h2>
-                <p>네이버 예약 연동 및 인력 시간 코드 기반 예약 관리</p>
+                <p>인력시간코드 기반 예약 가용성 확인</p>
             </div>
             
-            <!-- 날짜 선택 -->
             <div class="date-selector">
                 <button class="date-nav" onclick="App.prevDay()">◀</button>
-                <div class="current-date" id="currentDate">2024년 12월 23일 (월)</div>
+                <div class="current-date" id="currentDate"></div>
                 <button class="date-nav" onclick="App.nextDay()">▶</button>
                 <button class="btn btn-primary" onclick="App.goToday()">오늘</button>
             </div>
             
-            <!-- 인력 현황 -->
             <div class="staff-status">
                 <h3>👥 금일 인력 현황</h3>
-                <div class="staff-grid" id="staffGrid">
-                    <!-- JS로 렌더링 -->
-                </div>
+                <div id="staffGrid" class="staff-grid"></div>
             </div>
             
-            <!-- 예약 타임라인 -->
-            <div class="reservation-timeline">
+            <div class="timeline-container">
                 <div class="timeline-header">
-                    <div class="time-column">시간</div>
-                    <div class="staff-columns" id="staffColumns">
-                        <!-- JS로 렌더링 -->
-                    </div>
+                    <div class="time-col">시간</div>
+                    <div class="staff-cols" id="timelineHeader"></div>
                 </div>
-                <div class="timeline-body" id="timelineBody">
-                    <!-- JS로 렌더링 -->
-                </div>
+                <div class="timeline-body" id="timelineBody"></div>
             </div>
             
-            <!-- 예약 추가 모달 트리거 -->
-            <button class="fab" onclick="App.openReservationModal()">
-                <span>+</span>
-            </button>
+            <button class="fab" onclick="App.openReservationModal()">+</button>
         </section>
 
-        <!-- 설정 탭 -->
-        <section id="settings" class="tab-panel">
+        <!-- 인력 설정 탭 -->
+        <section id="staff" class="tab-panel">
             <div class="section-header">
-                <h2>⚙️ 시술 & 인력 시간 코드 설정</h2>
-                <p>각 시술별 필요 인력과 소요 시간을 설정합니다</p>
+                <h2>👥 인력 현황 설정</h2>
+                <p>직원 정보와 역할을 관리합니다</p>
             </div>
             
-            <!-- 인력 코드 설명 -->
-            <div class="code-legend">
-                <h3>📋 인력 시간 코드 체계</h3>
-                <div class="legend-grid">
-                    <div class="legend-item">
-                        <span class="code">H</span>
-                        <span class="desc">대표원장</span>
+            <div class="capacity-summary">
+                <h4>현재 인력 구성</h4>
+                <div class="capacity-grid">
+                    <div class="capacity-item">
+                        <span class="role-badge H">H</span>
+                        <span>대표원장 <strong id="capacityH">1</strong>명</span>
                     </div>
-                    <div class="legend-item">
-                        <span class="code">S</span>
-                        <span class="desc">부원장</span>
+                    <div class="capacity-item">
+                        <span class="role-badge S">S</span>
+                        <span>부원장 <strong id="capacityS">2</strong>명</span>
                     </div>
-                    <div class="legend-item">
-                        <span class="code">N</span>
-                        <span class="desc">간호사</span>
+                    <div class="capacity-item">
+                        <span class="role-badge N">N</span>
+                        <span>간호사 <strong id="capacityN">1</strong>명</span>
                     </div>
-                    <div class="legend-item">
-                        <span class="code">A</span>
-                        <span class="desc">관리사</span>
-                    </div>
-                    <div class="legend-item example">
-                        <span class="code">H10A20</span>
-                        <span class="desc">= 원장 10분 + 관리사 20분</span>
+                    <div class="capacity-item">
+                        <span class="role-badge A">A</span>
+                        <span>관리사 <strong id="capacityA">2</strong>명</span>
                     </div>
                 </div>
             </div>
             
-            <!-- 시술 설정 테이블 -->
-            <div class="settings-table-wrap">
-                <table class="settings-table" id="treatmentSettingsTable">
-                    <thead>
-                        <tr>
-                            <th>시술명</th>
-                            <th>카테고리</th>
-                            <th>객단가</th>
-                            <th>인력시간코드</th>
-                            <th>총 소요시간</th>
-                            <th>Tier</th>
-                            <th>액션</th>
-                        </tr>
-                    </thead>
-                    <tbody id="treatmentSettingsBody">
-                        <!-- JS로 렌더링 -->
-                    </tbody>
-                </table>
-            </div>
+            <div id="staffConfigGrid" class="staff-config-grid"></div>
             
-            <!-- 인력 설정 -->
-            <div class="staff-settings">
-                <h3>👥 인력 현황 설정</h3>
-                <div class="staff-config-grid" id="staffConfigGrid">
-                    <!-- JS로 렌더링 -->
-                </div>
-                <button class="btn btn-outline" onclick="App.addStaff()">
-                    + 인력 추가
-                </button>
-            </div>
+            <button class="btn btn-outline" onclick="App.addStaff()">
+                + 인력 추가
+            </button>
         </section>
     </main>
 
+    <!-- 시술 추가 모달 -->
+    <div class="modal" id="treatmentModal">
+        <div class="modal-backdrop" onclick="App.closeModal('treatmentModal')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💉 시술 추가/수정</h3>
+                <button class="modal-close" onclick="App.closeModal('treatmentModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>시술명 *</label>
+                    <input type="text" id="treatmentName" placeholder="시술명 입력">
+                </div>
+                <div class="form-group">
+                    <label>카테고리 *</label>
+                    <select id="treatmentCategory"></select>
+                </div>
+                <div class="form-group">
+                    <label>가격 (원)</label>
+                    <input type="number" id="treatmentPrice" placeholder="330000">
+                </div>
+                <div class="form-group">
+                    <label>인력시간코드 (선택 - 비워두면 카테고리 기본값)</label>
+                    <input type="text" id="treatmentCode" placeholder="예: H10N5A20">
+                </div>
+                <div class="form-group">
+                    <label>소요시간 (선택)</label>
+                    <input type="number" id="treatmentTime" placeholder="분 단위" min="5" step="5">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="App.closeModal('treatmentModal')">취소</button>
+                <button class="btn btn-primary" onclick="App.saveTreatment()">저장</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 예약 모달 -->
     <div class="modal" id="reservationModal">
-        <div class="modal-backdrop" onclick="App.closeModal()"></div>
+        <div class="modal-backdrop" onclick="App.closeModal('reservationModal')"></div>
         <div class="modal-content">
             <div class="modal-header">
                 <h3>📅 새 예약 등록</h3>
-                <button class="modal-close" onclick="App.closeModal()">×</button>
+                <button class="modal-close" onclick="App.closeModal('reservationModal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>고객명</label>
-                    <input type="text" id="customerName" placeholder="고객명 입력">
+                    <input type="text" id="customerName" placeholder="고객명">
                 </div>
                 <div class="form-group">
                     <label>연락처</label>
@@ -374,26 +285,22 @@
                 </div>
                 <div class="form-group">
                     <label>시술 선택</label>
-                    <select id="treatmentSelect">
-                        <option value="">시술을 선택하세요</option>
-                    </select>
+                    <select id="reservationTreatment" onchange="App.onTreatmentSelect()"></select>
                 </div>
                 <div class="form-group">
                     <label>예약 시간</label>
-                    <select id="timeSelect">
-                        <option value="">시간을 선택하세요</option>
-                    </select>
+                    <select id="reservationTime" onchange="App.checkSlotAvailability()"></select>
                 </div>
-                <div class="form-group">
-                    <label>인력시간코드</label>
-                    <div class="code-display" id="selectedCode">-</div>
+                <div class="code-display">
+                    <span class="label">인력시간코드:</span>
+                    <span id="selectedTreatmentCode">-</span>
+                    <span class="label" style="margin-left: 16px;">소요시간:</span>
+                    <span id="selectedTreatmentTime">-</span>
                 </div>
-                <div class="slot-availability" id="slotAvailability">
-                    <!-- 슬롯 가용성 표시 -->
-                </div>
+                <div id="slotAvailability" class="slot-availability"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="App.closeModal()">취소</button>
+                <button class="btn btn-outline" onclick="App.closeModal('reservationModal')">취소</button>
                 <button class="btn btn-primary" onclick="App.saveReservation()">예약 등록</button>
             </div>
         </div>
@@ -403,6 +310,9 @@
     <div class="toast" id="toast"></div>
 
     <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
     <script src="js/data.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/reservation.js"></script>
